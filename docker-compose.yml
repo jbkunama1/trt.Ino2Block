@@ -1,0 +1,19 @@
+# 🔧 trt.Ino2Block – Docker Compose
+# Starten: docker compose up -d
+# Stoppen: docker compose down
+
+services:
+  ino2block:
+    build: .
+    container_name: trt-ino2block
+    restart: unless-stopped
+    ports:
+      - "3210:80"       # Erreichbar unter http://localhost:3210
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/index.html"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    labels:
+      - "com.realteacher.project=trt.Ino2Block"
+      - "com.realteacher.description=Arduino zu Blockly XML Konverter"
