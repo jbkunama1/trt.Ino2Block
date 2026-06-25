@@ -16,6 +16,15 @@
   <main>
     <section id="input-section">
       <h2>1. Arduino-Code eingeben</h2>
+
+      <div class="example-bar">
+        <span>📚 Beispiel laden:</span>
+        <button onclick="loadExample('blink')">Blink</button>
+        <button onclick="loadExample('button')">Button</button>
+        <button onclick="loadExample('servo')">Servo</button>
+        <button onclick="loadExample('analog')">Analogwert</button>
+      </div>
+
       <textarea id="arduino-code" rows="16" placeholder="// Hier Arduino-Code einfügen...
 void setup() {
   pinMode(13, OUTPUT);
@@ -26,9 +35,13 @@ void loop() {
   digitalWrite(13, LOW);
   delay(1000);
 }"></textarea>
+
       <div class="controls">
         <label for="api-key">🔑 Gemini API-Key:</label>
         <input type="password" id="api-key" placeholder="AIza..." />
+        <label class="checkbox-label">
+          <input type="checkbox" id="save-key" onchange="toggleSaveKey()" /> Key speichern
+        </label>
         <button id="convert-btn" onclick="convertCode()">⚡ Konvertieren</button>
       </div>
     </section>

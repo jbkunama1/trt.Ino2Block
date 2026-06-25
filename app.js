@@ -1,5 +1,6 @@
 const GEMINI_MODEL = "gemini-1.5-flash";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const LS_KEY = "trt_ino2block_apikey";
 
 const SYSTEM_PROMPT = `Du bist ein Experte für Arduino-Programmierung und Blockly.
 Konvertiere den folgenden Arduino C++ Code in valides Blockly XML.
@@ -10,14 +11,92 @@ Regeln:
 - Keine Markdown-Codeblocke, nur reines XML zurückgeben.
 - Kommentiere komplexe Blöcke mit <comment> Tags.`;
 
+const EXAMPLES = {
+  blink: `void setup() {
+  pinMode(13, OUTPUT);
+}
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}`,
+  button: `const int btnPin = 2;
+const int ledPin = 13;
+void setup() {
+  pinMode(btnPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+}
+void loop() {
+  int state = digitalRead(btnPin);
+  digitalWrite(ledPin, state);
+}`,
+  servo: `#include <Servo.h>
+Servo myServo;
+void setup() {
+  myServo.attach(9);
+}
+void loop() {
+  myServo.write(0);
+  delay(1000);
+  myServo.write(90);
+  delay(1000);
+  myServo.write(180);
+  delay(1000);
+}`,
+  analog: `int sensorPin = A0;
+int ledPin = 9;
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+void loop() {
+  int val = analogRead(sensorPin);
+  int brightness = map(val, 0, 1023, 0, 255);
+  analogWrite(ledPin, brightness);
+  Serial.println(val);
+  delay(100);
+}`
+};
+
+// LocalStorage: API-Key laden
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem(LS_KEY);
+  if (saved) {
+    document.getElementById("api-key").value = saved;
+    document.getElementById("save-key").checked = true;
+  }
+});
+
+function toggleSaveKey() {
+  const save = document.getElementById("save-key").checked;
+  const key = document.getElementById("api-key").value.trim();
+  if (save && key) {
+    localStorage.setItem(LS_KEY, key);
+    showStatus("🔒 API-Key gespeichert (LocalStorage)", "success");
+  } else {
+    localStorage.removeItem(LS_KEY);
+    showStatus("🗑️ API-Key aus Speicher gelöscht", "warn");
+  }
+}
+
+function loadExample(name) {
+  document.getElementById("arduino-code").value = EXAMPLES[name] || "";
+  showStatus(`📚 Beispiel geladen: ${name}`, "info");
+}
+
 async function convertCode() {
   const code = document.getElementById("arduino-code").value.trim();
   const apiKey = document.getElementById("api-key").value.trim();
-  const statusEl = document.getElementById("status-msg");
   const xmlOutput = document.getElementById("blockly-xml");
 
   if (!code) return showStatus("⚠️ Bitte Arduino-Code eingeben.", "warn");
   if (!apiKey) return showStatus("⚠️ Bitte Gemini API-Key eingeben.", "warn");
+
+  // Key speichern wenn Checkbox aktiv
+  if (document.getElementById("save-key").checked) {
+    localStorage.setItem(LS_KEY, apiKey);
+  }
 
   showStatus("⏳ Konvertierung läuft...", "info");
   document.getElementById("convert-btn").disabled = true;
@@ -43,8 +122,6 @@ async function convertCode() {
 
     const data = await response.json();
     let xmlText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    // Strip markdown code blocks if present
     xmlText = xmlText.replace(/```xml?\n?/gi, "").replace(/```/g, "").trim();
 
     if (!xmlText.startsWith("<xml")) {

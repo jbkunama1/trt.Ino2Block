@@ -46,9 +46,19 @@
     .card p, .card li { color: #c0c0d8; line-height: 1.7; }
     .card ul { padding-left: 1.2rem; }
     .card ul li { margin-bottom: 0.3rem; }
+    .card pre {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 1rem;
+      font-size: 0.82rem;
+      color: #58a6ff;
+      overflow-x: auto;
+      margin-top: 0.8rem;
+    }
     .feature-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
       margin-top: 0.5rem;
     }
@@ -114,6 +124,7 @@
     <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JS">
     <img src="https://img.shields.io/badge/Blockly-4285F4?style=flat-square&logo=google&logoColor=white" alt="Blockly">
     <img src="https://img.shields.io/badge/Gemini_AI-teal?style=flat-square&logo=google&logoColor=white" alt="Gemini">
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
     <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT">
   </div>
 </header>
@@ -132,21 +143,33 @@
       <div class="feature-item"><span class="icon">🧱</span><strong>Blockly XML</strong><span>Tinkercad-kompatibel</span></div>
       <div class="feature-item"><span class="icon">🔍</span><strong>Live-Vorschau</strong><span>Blockly im Browser</span></div>
       <div class="feature-item"><span class="icon">💾</span><strong>XML-Export</strong><span>Download als .xml</span></div>
-      <div class="feature-item"><span class="icon">🔒</span><strong>Client-only</strong><span>Kein Server, kein Tracking</span></div>
+      <div class="feature-item"><span class="icon">📚</span><strong>Beispiel-Sketches</strong><span>Blink, Button, Servo, Analog</span></div>
+      <div class="feature-item"><span class="icon">🔒</span><strong>Key speichern</strong><span>LocalStorage optional</span></div>
+      <div class="feature-item"><span class="icon">🐳</span><strong>Docker-ready</strong><span>Port 3210, nginx:alpine</span></div>
       <div class="feature-item"><span class="icon">🌑</span><strong>Dark UI</strong><span>Schulgeeignetes Design</span></div>
     </div>
   </div>
 
   <div class="card">
     <h2>🚀 So funktioniert's</h2>
-    <div class="step"><div class="step-num">1</div><div><strong>Arduino-Code einfügen</strong><p>Beliebigen Sketch in das Textfeld kopieren</p></div></div>
-    <div class="step"><div class="step-num">2</div><div><strong>Gemini API-Key eingeben</strong><p>Kostenlos unter <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#58a6ff">aistudio.google.com</a></p></div></div>
+    <div class="step"><div class="step-num">1</div><div><strong>Arduino-Code einfügen</strong><p>Beliebigen Sketch eingeben oder Beispiel wählen</p></div></div>
+    <div class="step"><div class="step-num">2</div><div><strong>Gemini API-Key eingeben</strong><p>Kostenlos unter <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#58a6ff">aistudio.google.com</a> – optional speichern</p></div></div>
     <div class="step"><div class="step-num">3</div><div><strong>Konvertieren klicken</strong><p>KI analysiert den Code und generiert Blockly XML</p></div></div>
     <div class="step"><div class="step-num">4</div><div><strong>XML exportieren oder Vorschau laden</strong><p>Download als .xml oder direkte Blockly-Ansicht</p></div></div>
   </div>
 
+  <div class="card">
+    <h2>🐳 Docker Schnellstart</h2>
+    <p>Für Schulserver, Heimnetz oder LAN – 3 Befehle genügen:</p>
+    <pre>git clone https://github.com/jbkunama1/trt.Ino2Block
+cd trt.Ino2Block
+docker compose up -d
+# → http://&lt;server-ip&gt;:3210</pre>
+    <p style="margin-top:0.8rem">Oder als <strong>Portainer Stack</strong>: Inhalt von <code style="color:#58a6ff">docker-compose.yml</code> einfügen – fertig.</p>
+  </div>
+
   <div class="cta">
-    <a href="../index.html" class="btn">⚡ App starten</a>
+    <a href="https://jbkunama1.github.io/trt.Ino2Block/" class="btn">⚡ App starten</a>
     <a href="https://github.com/jbkunama1/trt.Ino2Block" target="_blank" class="btn secondary">📂 GitHub Repo</a>
     <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn secondary">🔑 API-Key holen</a>
   </div>
