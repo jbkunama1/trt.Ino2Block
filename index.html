@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>trt.Ino2Block – Arduino → Blockly</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🔧 trt.Ino2Block</h1>
+    <p>Arduino-Code → Tinkercad/Blockly XML Konverter</p>
+  </header>
+
+  <main>
+    <section id="input-section">
+      <h2>1. Arduino-Code eingeben</h2>
+      <textarea id="arduino-code" rows="16" placeholder="// Hier Arduino-Code einfügen...
+void setup() {
+  pinMode(13, OUTPUT);
+}
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}"></textarea>
+      <div class="controls">
+        <label for="api-key">🔑 Gemini API-Key:</label>
+        <input type="password" id="api-key" placeholder="AIza..." />
+        <button id="convert-btn" onclick="convertCode()">⚡ Konvertieren</button>
+      </div>
+    </section>
+
+    <section id="output-section">
+      <h2>2. Blockly XML Output</h2>
+      <div id="status-msg"></div>
+      <textarea id="blockly-xml" rows="16" placeholder="Blockly XML erscheint hier..." readonly></textarea>
+      <div class="controls">
+        <button id="export-btn" onclick="exportXML()" disabled>💾 XML exportieren</button>
+        <button id="copy-btn" onclick="copyXML()" disabled>📋 Kopieren</button>
+      </div>
+    </section>
+
+    <section id="preview-section">
+      <h2>3. Blockly Vorschau</h2>
+      <div id="blockly-div"></div>
+      <button id="preview-btn" onclick="loadPreview()" disabled>🔍 Vorschau laden</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>trt.Ino2Block · <a href="https://github.com/jbkunama1/trt.Ino2Block" target="_blank">GitHub</a> · therealteacher</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
