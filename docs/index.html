@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>trt.Ino2Block – Arduino → Blockly Konverter</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      width: 100%;
+      background: #16213e;
+      border-bottom: 3px solid #e94560;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2.4rem; color: #e94560; letter-spacing: 1px; }
+    header p  { color: #a0a0c0; margin-top: 0.5rem; font-size: 1.05rem; }
+    .badge-row {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      justify-content: center; margin-top: 1.2rem;
+    }
+    .badge-row img { height: 28px; }
+    main {
+      max-width: 860px;
+      width: 100%;
+      padding: 2.5rem 1.5rem;
+      display: grid;
+      gap: 1.5rem;
+    }
+    .card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .card h2 { color: #e94560; margin-bottom: 0.8rem; font-size: 1.15rem; }
+    .card p, .card li { color: #c0c0d8; line-height: 1.7; }
+    .card ul { padding-left: 1.2rem; }
+    .card ul li { margin-bottom: 0.3rem; }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .feature-item {
+      background: #0f3460;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .feature-item .icon { font-size: 2rem; display: block; margin-bottom: 0.4rem; }
+    .feature-item strong { color: #e0e0e0; display: block; margin-bottom: 0.3rem; }
+    .feature-item span { font-size: 0.85rem; color: #a0a0c0; }
+    .cta {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .btn {
+      display: inline-block;
+      background: #e94560;
+      color: white;
+      text-decoration: none;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      margin: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #c73652; }
+    .btn.secondary {
+      background: #0f3460;
+      border: 1px solid #e94560;
+    }
+    .btn.secondary:hover { background: #1a4a80; }
+    .step { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+    .step-num {
+      background: #e94560;
+      color: white;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; flex-shrink: 0;
+    }
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 1.5rem;
+      color: #555;
+      font-size: 0.85rem;
+      border-top: 1px solid #0f3460;
+      margin-top: auto;
+    }
+    footer a { color: #58a6ff; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔧 trt.Ino2Block</h1>
+  <p>Arduino C++ Code → Tinkercad / Blockly XML Konverter</p>
+  <div class="badge-row">
+    <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" alt="HTML5">
+    <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JS">
+    <img src="https://img.shields.io/badge/Blockly-4285F4?style=flat-square&logo=google&logoColor=white" alt="Blockly">
+    <img src="https://img.shields.io/badge/Gemini_AI-teal?style=flat-square&logo=google&logoColor=white" alt="Gemini">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT">
+  </div>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>✨ Was macht trt.Ino2Block?</h2>
+    <p>Diese WebApp konvertiert beliebigen <strong>Arduino-C++-Code</strong> mithilfe von Google Gemini KI in valides <strong>Blockly XML</strong> – das Blockprogrammierformat von Tinkercad. Keine Installation, kein Backend, läuft komplett im Browser.</p>
+  </div>
+
+  <div class="card">
+    <h2>⚡ Features</h2>
+    <div class="feature-grid">
+      <div class="feature-item"><span class="icon">🤖</span><strong>KI-Konvertierung</strong><span>Google Gemini 1.5 Flash</span></div>
+      <div class="feature-item"><span class="icon">🧱</span><strong>Blockly XML</strong><span>Tinkercad-kompatibel</span></div>
+      <div class="feature-item"><span class="icon">🔍</span><strong>Live-Vorschau</strong><span>Blockly im Browser</span></div>
+      <div class="feature-item"><span class="icon">💾</span><strong>XML-Export</strong><span>Download als .xml</span></div>
+      <div class="feature-item"><span class="icon">🔒</span><strong>Client-only</strong><span>Kein Server, kein Tracking</span></div>
+      <div class="feature-item"><span class="icon">🌑</span><strong>Dark UI</strong><span>Schulgeeignetes Design</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🚀 So funktioniert's</h2>
+    <div class="step"><div class="step-num">1</div><div><strong>Arduino-Code einfügen</strong><p>Beliebigen Sketch in das Textfeld kopieren</p></div></div>
+    <div class="step"><div class="step-num">2</div><div><strong>Gemini API-Key eingeben</strong><p>Kostenlos unter <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#58a6ff">aistudio.google.com</a></p></div></div>
+    <div class="step"><div class="step-num">3</div><div><strong>Konvertieren klicken</strong><p>KI analysiert den Code und generiert Blockly XML</p></div></div>
+    <div class="step"><div class="step-num">4</div><div><strong>XML exportieren oder Vorschau laden</strong><p>Download als .xml oder direkte Blockly-Ansicht</p></div></div>
+  </div>
+
+  <div class="cta">
+    <a href="../index.html" class="btn">⚡ App starten</a>
+    <a href="https://github.com/jbkunama1/trt.Ino2Block" target="_blank" class="btn secondary">📂 GitHub Repo</a>
+    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn secondary">🔑 API-Key holen</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>trt.Ino2Block · Made with ❤️ für den Schulunterricht · <a href="https://www.realteacher.de" target="_blank">therealteacher</a> · <a href="https://github.com/jbkunama1/trt.Ino2Block" target="_blank">GitHub</a></p>
+</footer>
+
+</body>
+</html>
