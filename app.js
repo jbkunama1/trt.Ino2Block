@@ -1,4 +1,4 @@
-const GEMINI_MODEL = "gemini-1.5-flash";
+const GEMINI_MODEL = "gemini-2.0-flash";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const LS_KEY = "trt_ino2block_apikey";
 
@@ -8,7 +8,7 @@ Regeln:
 - Verwende ausschließlich Standard-Blockly-Blöcke (controls, logic, math, text, variables, procedures).
 - Für Arduino-spezifische Funktionen (pinMode, digitalWrite, analogWrite, delay, Serial) erstelle custom_block Einträge mit passendem type-Attribut.
 - Das XML muss mit <xml xmlns="https://developers.google.com/blockly/xml"> beginnen und mit </xml> enden.
-- Keine Markdown-Codeblocke, nur reines XML zurückgeben.
+- Keine Markdown-Codeblöcke, nur reines XML zurückgeben.
 - Kommentiere komplexe Blöcke mit <comment> Tags.`;
 
 const EXAMPLES = {
@@ -59,7 +59,6 @@ void loop() {
 }`
 };
 
-// LocalStorage: API-Key laden
 window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem(LS_KEY);
   if (saved) {
@@ -93,7 +92,6 @@ async function convertCode() {
   if (!code) return showStatus("⚠️ Bitte Arduino-Code eingeben.", "warn");
   if (!apiKey) return showStatus("⚠️ Bitte Gemini API-Key eingeben.", "warn");
 
-  // Key speichern wenn Checkbox aktiv
   if (document.getElementById("save-key").checked) {
     localStorage.setItem(LS_KEY, apiKey);
   }
