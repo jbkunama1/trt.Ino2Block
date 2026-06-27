@@ -16,7 +16,6 @@
   <main>
     <section id="input-section">
       <h2>1. Arduino-Code eingeben</h2>
-
       <div class="example-bar">
         <span>📚 Beispiel laden:</span>
         <button onclick="loadExample('blink')">Blink</button>
@@ -24,7 +23,6 @@
         <button onclick="loadExample('servo')">Servo</button>
         <button onclick="loadExample('analog')">Analogwert</button>
       </div>
-
       <textarea id="arduino-code" rows="16" placeholder="// Hier Arduino-Code einfügen...
 void setup() {
   pinMode(13, OUTPUT);
@@ -35,19 +33,56 @@ void loop() {
   digitalWrite(13, LOW);
   delay(1000);
 }"></textarea>
+    </section>
 
-      <div class="controls">
-        <label for="api-key">🔑 Gemini API-Key:</label>
-        <input type="password" id="api-key" placeholder="AIza..." />
-        <label class="checkbox-label">
-          <input type="checkbox" id="save-key" onchange="toggleSaveKey()" /> Key speichern
-        </label>
+    <section id="provider-section">
+      <h2>2. LLM-Provider konfigurieren</h2>
+
+      <div class="provider-tabs">
+        <button id="tab-gemini" class="tab-btn active" onclick="switchProvider('gemini')">🤖 Google Gemini</button>
+        <button id="tab-openai" class="tab-btn" onclick="switchProvider('openai')">💻 OpenAI-kompatibel (lokal / API)</button>
+      </div>
+
+      <div id="panel-gemini" class="provider-panel">
+        <div class="controls">
+          <label for="gemini-key">🔑 Gemini API-Key:</label>
+          <input type="password" id="gemini-key" placeholder="AIza..." />
+          <label class="checkbox-label">
+            <input type="checkbox" id="save-gemini" onchange="saveSettings()" /> speichern
+          </label>
+        </div>
+        <p class="provider-hint">Kostenlosen Key holen: <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a> · Modell: <code>gemini-2.0-flash</code></p>
+      </div>
+
+      <div id="panel-openai" class="provider-panel hidden">
+        <div class="controls">
+          <label for="oai-endpoint">🌐 Endpoint URL:</label>
+          <input type="text" id="oai-endpoint" placeholder="http://localhost:11434/v1/chat/completions" />
+        </div>
+        <div class="controls" style="margin-top:0.6rem">
+          <label for="oai-model">🧠 Modell:</label>
+          <input type="text" id="oai-model" placeholder="llama3, mistral, gpt-4o ..." />
+          <label for="oai-key">🔑 API-Key:</label>
+          <input type="password" id="oai-key" placeholder="sk-... oder leer lassen" />
+          <label class="checkbox-label">
+            <input type="checkbox" id="save-openai" onchange="saveSettings()" /> speichern
+          </label>
+        </div>
+        <p class="provider-hint">
+          Kompatibel mit: <strong>Ollama</strong> (<code>http://localhost:11434/v1/chat/completions</code>)
+          &nbsp;·&nbsp; <strong>LM Studio</strong> (<code>http://localhost:1234/v1/chat/completions</code>)
+          &nbsp;·&nbsp; <strong>OpenAI</strong> (<code>https://api.openai.com/v1/chat/completions</code>)
+          &nbsp;·&nbsp; <strong>vLLM</strong>, <strong>LocalAI</strong>, etc.
+        </p>
+      </div>
+
+      <div class="controls" style="margin-top:1rem">
         <button id="convert-btn" onclick="convertCode()">⚡ Konvertieren</button>
       </div>
     </section>
 
     <section id="output-section">
-      <h2>2. Blockly XML Output</h2>
+      <h2>3. Blockly XML Output</h2>
       <div id="status-msg"></div>
       <textarea id="blockly-xml" rows="16" placeholder="Blockly XML erscheint hier..." readonly></textarea>
       <div class="controls">
@@ -57,7 +92,7 @@ void loop() {
     </section>
 
     <section id="preview-section">
-      <h2>3. Blockly Vorschau</h2>
+      <h2>4. Blockly Vorschau</h2>
       <div id="blockly-div"></div>
       <button id="preview-btn" onclick="loadPreview()" disabled>🔍 Vorschau laden</button>
     </section>

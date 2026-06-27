@@ -1,6 +1,6 @@
 const GEMINI_MODEL = "gemini-2.0-flash";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-const LS_KEY = "trt_ino2block_apikey";
+const GEMINI_URL   = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+const LS_KEY       = "trt_ino2block_settings";
 
 const SYSTEM_PROMPT = `Du bist ein Experte für Arduino-Programmierung und Blockly.
 Konvertiere den folgenden Arduino C++ Code in valides Blockly XML.
@@ -59,25 +59,48 @@ void loop() {
 }`
 };
 
-window.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem(LS_KEY);
-  if (saved) {
-    document.getElementById("api-key").value = saved;
-    document.getElementById("save-key").checked = true;
-  }
-});
+let currentProvider = "gemini";
 
-function toggleSaveKey() {
-  const save = document.getElementById("save-key").checked;
-  const key = document.getElementById("api-key").value.trim();
-  if (save && key) {
-    localStorage.setItem(LS_KEY, key);
-    showStatus("🔒 API-Key gespeichert (LocalStorage)", "success");
-  } else {
-    localStorage.removeItem(LS_KEY);
-    showStatus("🗑️ API-Key aus Speicher gelöscht", "warn");
-  }
+function switchProvider(p) {
+  currentProvider = p;
+  document.getElementById("panel-gemini").classList.toggle("hidden", p !== "gemini");
+  document.getElementById("panel-openai").classList.toggle("hidden", p !== "openai");
+  document.getElementById("tab-gemini").classList.toggle("active", p === "gemini");
+  document.getElementById("tab-openai").classList.toggle("active", p === "openai");
+  saveSettings();
 }
+
+function saveSettings() {
+  const s = {
+    provider:    currentProvider,
+    geminiKey:   document.getElementById("save-gemini").checked ? document.getElementById("gemini-key").value : "",
+    saveGemini:  document.getElementById("save-gemini").checked,
+    oaiEndpoint: document.getElementById("save-openai").checked ? document.getElementById("oai-endpoint").value : "",
+    oaiModel:    document.getElementById("save-openai").checked ? document.getElementById("oai-model").value : "",
+    oaiKey:      document.getElementById("save-openai").checked ? document.getElementById("oai-key").value : "",
+    saveOpenai:  document.getElementById("save-openai").checked,
+  };
+  localStorage.setItem(LS_KEY, JSON.stringify(s));
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const raw = localStorage.getItem(LS_KEY);
+  if (!raw) return;
+  try {
+    const s = JSON.parse(raw);
+    if (s.saveGemini && s.geminiKey) {
+      document.getElementById("gemini-key").value = s.geminiKey;
+      document.getElementById("save-gemini").checked = true;
+    }
+    if (s.saveOpenai) {
+      document.getElementById("oai-endpoint").value  = s.oaiEndpoint || "";
+      document.getElementById("oai-model").value     = s.oaiModel    || "";
+      document.getElementById("oai-key").value       = s.oaiKey      || "";
+      document.getElementById("save-openai").checked = true;
+    }
+    if (s.provider) switchProvider(s.provider);
+  } catch(e) {}
+});
 
 function loadExample(name) {
   document.getElementById("arduino-code").value = EXAMPLES[name] || "";
@@ -86,86 +109,106 @@ function loadExample(name) {
 
 async function convertCode() {
   const code = document.getElementById("arduino-code").value.trim();
-  const apiKey = document.getElementById("api-key").value.trim();
-  const xmlOutput = document.getElementById("blockly-xml");
-
   if (!code) return showStatus("⚠️ Bitte Arduino-Code eingeben.", "warn");
-  if (!apiKey) return showStatus("⚠️ Bitte Gemini API-Key eingeben.", "warn");
-
-  if (document.getElementById("save-key").checked) {
-    localStorage.setItem(LS_KEY, apiKey);
-  }
 
   showStatus("⏳ Konvertierung läuft...", "info");
   document.getElementById("convert-btn").disabled = true;
 
   try {
-    const response = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `${SYSTEM_PROMPT}\n\nArduino-Code:\n\`\`\`cpp\n${code}\n\`\`\``
-          }]
-        }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 8192 }
-      })
-    });
+    let xmlText = currentProvider === "gemini"
+      ? await convertGemini(code)
+      : await convertOpenAI(code);
 
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error?.message || `HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-    let xmlText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     xmlText = xmlText.replace(/```xml?\n?/gi, "").replace(/```/g, "").trim();
+    if (!xmlText.startsWith("<xml")) throw new Error("Keine valide Blockly XML-Antwort erhalten.");
 
-    if (!xmlText.startsWith("<xml")) {
-      throw new Error("Keine valide Blockly XML-Antwort erhalten.");
-    }
-
-    xmlOutput.value = xmlText;
+    document.getElementById("blockly-xml").value    = xmlText;
     showStatus("✅ Konvertierung erfolgreich!", "success");
-    document.getElementById("export-btn").disabled = false;
-    document.getElementById("copy-btn").disabled = false;
+    document.getElementById("export-btn").disabled  = false;
+    document.getElementById("copy-btn").disabled    = false;
     document.getElementById("preview-btn").disabled = false;
+    saveSettings();
 
-  } catch (e) {
+  } catch(e) {
     showStatus(`❌ Fehler: ${e.message}`, "error");
   } finally {
     document.getElementById("convert-btn").disabled = false;
   }
 }
 
+async function convertGemini(code) {
+  const apiKey = document.getElementById("gemini-key").value.trim();
+  if (!apiKey) throw new Error("Bitte Gemini API-Key eingeben.");
+
+  const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: `${SYSTEM_PROMPT}\n\nArduino-Code:\n\`\`\`cpp\n${code}\n\`\`\`` }] }],
+      generationConfig: { temperature: 0.2, maxOutputTokens: 8192 }
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+}
+
+async function convertOpenAI(code) {
+  const endpoint = document.getElementById("oai-endpoint").value.trim();
+  const model    = document.getElementById("oai-model").value.trim();
+  const apiKey   = document.getElementById("oai-key").value.trim();
+
+  if (!endpoint) throw new Error("Bitte Endpoint URL eingeben.");
+  if (!model)    throw new Error("Bitte Modellname eingeben.");
+
+  const headers = { "Content-Type": "application/json" };
+  if (apiKey) headers["Authorization"] = `Bearer ${apiKey}`;
+
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user",   content: `Arduino-Code:\n\`\`\`cpp\n${code}\n\`\`\`` }
+      ],
+      temperature: 0.2,
+      max_tokens: 8192
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
 function exportXML() {
   const xml = document.getElementById("blockly-xml").value;
   if (!xml) return;
   const blob = new Blob([xml], { type: "text/xml" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "blockly_export.xml";
-  a.click();
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url; a.download = "blockly_export.xml"; a.click();
   URL.revokeObjectURL(url);
   showStatus("💾 XML gespeichert als blockly_export.xml", "success");
 }
 
 function copyXML() {
-  const xml = document.getElementById("blockly-xml").value;
-  navigator.clipboard.writeText(xml).then(() => {
-    showStatus("📋 In Zwischenablage kopiert!", "success");
-  });
+  navigator.clipboard.writeText(document.getElementById("blockly-xml").value)
+    .then(() => showStatus("📋 In Zwischenablage kopiert!", "success"));
 }
 
 function loadPreview() {
   const xmlText = document.getElementById("blockly-xml").value;
   if (!xmlText) return;
-
   const container = document.getElementById("blockly-div");
   container.innerHTML = "";
-
   const workspace = Blockly.inject(container, {
     toolbox: {
       kind: "flyoutToolbox",
@@ -179,16 +222,13 @@ function loadPreview() {
         { kind: "block", type: "procedures_defnoreturn" },
       ]
     },
-    scrollbars: true,
-    trashcan: true,
+    scrollbars: true, trashcan: true,
   });
-
   try {
-    const parser = new DOMParser();
-    const dom = parser.parseFromString(xmlText, "text/xml");
+    const dom = new DOMParser().parseFromString(xmlText, "text/xml");
     Blockly.Xml.domToWorkspace(dom.documentElement, workspace);
     showStatus("🔍 Vorschau geladen!", "success");
-  } catch (e) {
+  } catch(e) {
     showStatus(`❌ Vorschau-Fehler: ${e.message}`, "error");
   }
 }
