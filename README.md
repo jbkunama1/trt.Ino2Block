@@ -17,7 +17,7 @@
 **Arduino C++ Code → Tinkercad/Blockly XML Konverter**  
 *KI-gestützte WebApp für den Technik- und Informatikunterricht* 🎓
 
-<a href="https://www.buymeacoffee.com/highfish"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/highfish)
 
 </div>
 
@@ -165,7 +165,7 @@ Die App benötigt einen **Google Gemini API-Key**:
 
 Wenn dir dieses Projekt gefällt und du die Weiterentwicklung unterstützen möchtest:
 
-<a href="https://www.buymeacoffee.com/highfish"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/highfish)
 
 ---
 
